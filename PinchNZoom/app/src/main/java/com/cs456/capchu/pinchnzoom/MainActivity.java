@@ -1,9 +1,12 @@
 package com.cs456.capchu.pinchnzoom;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,6 +22,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,39 +32,108 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends Activity{
 
     private Camera mCamera;
+    private SurfaceView surfaceView;
     private CameraPreview mPreview;
-    int activeCam = 1;
+    private Camera.PictureCallback mPictureCallback;
+    private ImageView imageView;
+    int activeCam = -1;
+    int numCams = 0;
+    int frontCamera = -1;
+    int backCamera = -1;
     public static final int MEDIA_TYPE_IMAGE = 1;
+    private Button captureButton;
+    protected static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        numCams = checkCameraHardware(this);
+        Log.i(TAG, "numberOfCameras: " + numCams);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        //if you have more than one camera make them swappable
+        if(numCams > 1) {
+            FloatingActionButton cameraSwap = (FloatingActionButton) findViewById(R.id.swap_camera);
+            cameraSwap.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mCamera.stopPreview();
+                    releaseCamera();
+                    selectCamera();
+                    mCamera = getCameraInstance(activeCam);
+
+                    mCamera.setDisplayOrientation(90);
+                    try {
+                        mCamera.setPreviewDisplay(mPreview.getHolder());
+                    } catch (IOException e) {
+                        Log.i(TAG, "Can't Set Preview Display: " + e.getMessage());
+                    }
+                    mCamera.startPreview();
+                }
+            });
+        }
+
+
+        FloatingActionButton takePicture = (FloatingActionButton) findViewById(R.id.button_capture);
+        takePicture.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                mCamera.takePicture(null, null, mPicture);
+                Log.i(TAG, "Picture Taken");
+                Uri u = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
+                File f = getOutputMediaFile(MEDIA_TYPE_IMAGE);
+
+                //View Pic Activity Stuff Here
             }
         });
 
+
         //Create an instance of Camera
-        mCamera = getCameraInstance(activeCam);
+        selectCamera();
+        mCamera = getCameraInstance(backCamera);
 
         //Create our preiview view and set it as the content of our activity.
         mPreview = new CameraPreview(this, mCamera);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        mCamera.setDisplayOrientation(90);
         preview.addView(mPreview);
     }
+
+    private void selectCamera(){
+        if(activeCam == -1){
+            activeCam = backCamera;
+        }else if(activeCam == backCamera){
+            activeCam = frontCamera;
+        }else{
+            activeCam = backCamera;
+        }
+
+
+    }
+
+    //Code From Stack Overflow "Safer Way to Open Camera"
+    public static Camera getCameraInstance(int toOpen){
+        Camera c = null;
+        try{
+            c = Camera.open(toOpen);
+            //Camera.Parameters params = c.getParameters();
+            //params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+            //c.setParameters(params);
+        }catch(Exception e){
+            Log.i(TAG, "Camera Not Available: " + e.getMessage());
+        }
+        return c;
+    }
+
 
     @Override
     protected void onPause(){
         super.onPause();
+        mCamera.stopPreview();
         releaseCamera();
     }
 
@@ -76,22 +150,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             //Has Camera
             int numCams = Camera.getNumberOfCameras();
+            for (int i = 0; i < numCams; i++){
+                Camera.CameraInfo info = new Camera.CameraInfo();
+                Camera.getCameraInfo(i, info);;
+                if(info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT){
+                    Log.i(TAG, "Front Camera found: " + i);
+                    frontCamera = i;
+                }else if(info.facing == Camera.CameraInfo.CAMERA_FACING_BACK){
+                    Log.i(TAG, "Back Camera found: " + i);
+                    backCamera = i;
+                }
+            }
             return numCams;
         }
         else
         {
             return 0;
         }
-    }
-
-    public static Camera getCameraInstance(int camNum){
-        Camera c = null;
-        try {
-            c = Camera.open(camNum);
-        }catch(Exception e){
-            //Not Available or Does not Exist
-        }
-        return c;
     }
 
     @Override
@@ -121,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onPictureTaken(byte[] data, Camera camera) {
             File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
             if (pictureFile == null) {
-                Log.d("PinchNZoom", "Error creating media file, check storage permissions: ");
+                Log.i(TAG, "Error creating media file, check storage permissions: ");
                 return;
             }
 
@@ -129,10 +204,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 FileOutputStream fos = new FileOutputStream(pictureFile);
                 fos.write(data);
                 fos.close();
+                Log.i(TAG, "Wrote Picture to File!");
             } catch (FileNotFoundException e) {
-                Log.d("PinchNZoom", "File not found: " + e.getMessage());
+                Log.i(TAG, "File not found: " + e.getMessage());
             } catch (IOException e) {
-                Log.d("PinchNZoom", "Error accessing file" + e.getMessage());
+                Log.i(TAG, "Error accessing file" + e.getMessage());
             }
         }
     };
@@ -143,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if(!mediaStorageDir.exists()){
             if(!mediaStorageDir.mkdirs()){
-                Log.d("PinchNZoom", "Failed to create directory" );
+                Log.i(TAG, "Failed to create directory" );
                 return null;
             }
         }
@@ -153,6 +229,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         File mediaFile;
         if(type == MEDIA_TYPE_IMAGE){
             mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
+            Log.i(TAG, "Picture Location: " + mediaFile.getAbsolutePath() );
         }else{
             return null;
         }
@@ -161,18 +238,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    @Override
-    public void onClick(View v) {
-        Button captureButton = (Button) findViewById(R.id.button_capture);
-        captureButton.setOnClickListener(
-                new View.OnClickListener(){
-                    public void onClick(View v){
-                    //get an image from the camera
-                    mCamera.takePicture(null, null, mPicture);
-                }
-            }
-        );
-    }
+
+
 
     private static Uri getOutputMediaFileUri(int type){
         return Uri.fromFile(getOutputMediaFile(type));

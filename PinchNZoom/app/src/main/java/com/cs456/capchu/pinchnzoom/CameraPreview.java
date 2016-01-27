@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.hardware.Camera;
+import android.view.ViewGroup;
 
 import java.io.IOException;
 
@@ -14,6 +15,7 @@ import java.io.IOException;
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback{
     private SurfaceHolder mHolder;
     private Camera mCamera;
+    protected static final String TAG = "MainActivity";
 
     public CameraPreview(Context context, Camera camera){
         super(context);
@@ -24,7 +26,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mHolder = getHolder();
         mHolder.addCallback(this);
         //Depreciated setting, required pre 3.0
-        //mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
     @Override
@@ -33,7 +35,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
         }catch (IOException e){
-            Log.d("PinchNZoom", "Error setting camera preview: " + e.getMessage());
+            Log.i(TAG, "Error setting camera preview: " + e.getMessage());
         }
     }
 
@@ -51,17 +53,15 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try{
             mCamera.stopPreview();
         }catch (Exception e){
-            //ignore
+            Log.i(TAG, "Could not stop preview: " + e.getMessage());
         }
-
-        //set preview size and make any resize, rotate or reformatting changes
 
         //start preveiw with new settings
         try{
             mCamera.setPreviewDisplay(mHolder);
             mCamera.startPreview();
         }catch (Exception e){
-            Log.d("PichNZoom", "Error starting camera preview: " + e.getMessage());
+            Log.i(TAG, "Error starting camera preview: " + e.getMessage());
         }
     }
 
