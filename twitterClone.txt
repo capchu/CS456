@@ -1,0 +1,30 @@
+Using the firebase API, implement a twitter client that allows for creating tweets and seeing a feed of tweets.  We'll share a common firebase database so that everyone sees everyone else's tweets.  
+
+Turn in 1-2 pages of text and screen shots to demonstrate that your app works.  Highlight what you did to earn points. 
+
+The shared back end for the project is at https://luminous-torch-6850.firebaseio.com/chatty   If you'd like to be added as a collaborator to this backend, send me a gmail address.  Being a collaborator will allow you to see the data from the console view in a browser.  That can be handy. 
+
+Basic twitter clone (live updates with new messages in some kind of live updating view, each message contains at least a message body with some text in it, the ability to send a message, the message format has a key/value pair per field see below to see the key list, the message should not be written as a json string.):  85 points. 
+
+Add the ability to record the phone's lat/long to the tweet so that you know where the phone was when the tweet was created.  + 5 
+
+Add a map view which shows a marker at every position from which someone tweeted.  +10 
+
+When the user clicks on a marker the user sees the tweet created at that location +5 
+
+Only show n most recent messages +5 
+
+Support deleting a message + 5 
+
+Allow messages to be sent in reply to other messages and display the chain of who replied to what (to at least one level of replies) +12
+
+Other improvements or extensions I haven't thought of +1 to +15
+
+ 
+
+Canonical key names: 
+
+public static String messageKey = "message";
+public static String inReplyToKey = "inReplyTo";
+public static String senderKey = "sender";
+public static String timeStampKey = "timeStamp";
