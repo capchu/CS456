@@ -28,3 +28,11 @@ public static String messageKey = "message";
 public static String inReplyToKey = "inReplyTo";
 public static String senderKey = "sender";
 public static String timeStampKey = "timeStamp";
+
+
+
+Things I did Extra:
+
+Read the Phones Lat/Long and added to tweet +5
+Change sender name on the fly +5
+messages posted with a timestamp +5

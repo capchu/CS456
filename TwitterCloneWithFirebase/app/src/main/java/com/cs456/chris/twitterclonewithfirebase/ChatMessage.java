@@ -15,6 +15,7 @@ public class ChatMessage {
     private String message;
     private String sender;
     private String timeStamp;
+    private String avatar;
 
     public ChatMessage(){
 
@@ -62,6 +63,10 @@ public class ChatMessage {
 
     public String getTimeStamp(){
         return timeStamp;
+    }
+
+    public String getAvatar(){
+        return avatar;
     }
 
     public void setName(String name) {

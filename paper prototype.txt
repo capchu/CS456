@@ -1,0 +1,22 @@
+Task 1: Check to see if your friend Barry has the movie Inception. Request it from him.
+Tried to click on the My Friends area to type in Barry's Name then hit arrow to go directly to him. After realizing the My Friends area was not a search completed correctly with no problems.
+
+Task 2: Check for requests (using the screens where Barry sent a request)
+Clicked on the request pending banner. (I assume that would go directly to the item requested and not just to the list?). Denied the request.
+
+Task 3: Add a movie to your inventory
+Clicked Movies, Then The Plus, Filled in Name and description then took a picture. Clicked submit.
+
+Task 4: Add Earl Edgington to your list of friends
+Clicked the arrow to go to friends. Clicked the plus. Then typed earl eddington and clicked his plus sign.
+
+Task 5: Mark Barry's Inception movie as a favorite
+clicked on friends, Barry, Movies, Star next to inception.
+
+Task 6: Mark your own item as a favorite
+My Movies, Star next to item name.
+
+Task 7: Edit movie information for one of your movies
+My movies, Item Name, Edit, Changed Description, Submit
+
+He expected his friends list to be under the list of "my lists" at first didn't see the bottom and clicked to create a new list for friends. When he saw the thing at the bottom he tried to use the place where it says "My Friends" as a search bar to type in Barry's Name. (not entirely sure if we planned on having that work)
