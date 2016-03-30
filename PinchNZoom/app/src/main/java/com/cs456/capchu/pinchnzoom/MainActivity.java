@@ -2,27 +2,20 @@ package com.cs456.capchu.pinchnzoom;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import java.io.File;
@@ -88,6 +81,7 @@ public class MainActivity extends Activity{
                 File f = getOutputMediaFile(MEDIA_TYPE_IMAGE);
 
                 //View Pic Activity Stuff Here
+
             }
         });
 
@@ -101,6 +95,13 @@ public class MainActivity extends Activity{
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         mCamera.setDisplayOrientation(90);
         preview.addView(mPreview);
+    }
+
+    public void viewImage(Uri u, File f){
+        Intent intent = new Intent(this, PinchAndZoom.class);
+        intent.putExtra("Uri", u);
+        intent.putExtra("File", f);
+        startActivity(intent);
     }
 
     private void selectCamera(){
@@ -210,6 +211,10 @@ public class MainActivity extends Activity{
             } catch (IOException e) {
                 Log.i(TAG, "Error accessing file" + e.getMessage());
             }
+
+            //Make A Call to next activity?
+            viewImage(null, pictureFile);
+
         }
     };
 
@@ -228,7 +233,7 @@ public class MainActivity extends Activity{
         String timeStamp = new SimpleDateFormat("yyyyHHdd__HHmmss").format(new Date());
         File mediaFile;
         if(type == MEDIA_TYPE_IMAGE){
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".bmp");
             Log.i(TAG, "Picture Location: " + mediaFile.getAbsolutePath() );
         }else{
             return null;
