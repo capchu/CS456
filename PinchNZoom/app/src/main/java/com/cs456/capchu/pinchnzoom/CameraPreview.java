@@ -15,6 +15,7 @@ import java.io.IOException;
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback{
     private SurfaceHolder mHolder;
     private Camera mCamera;
+    private Camera.Parameters camParam;
     protected static final String TAG = "MainActivity";
 
     public CameraPreview(Context context, Camera camera){
@@ -32,6 +33,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         try{
+            camParam = mCamera.getParameters();
+
+
+
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
         }catch (IOException e){

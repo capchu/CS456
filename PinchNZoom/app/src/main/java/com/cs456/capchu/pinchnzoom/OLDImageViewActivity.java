@@ -34,9 +34,8 @@ public class OLDImageViewActivity extends AppCompatActivity {
 
 
         TouchImageView img = new TouchImageView(this);
-        img.setImageBitmap(b);
+        img.setImageBitmap(b.createScaledBitmap(b, b.getWidth()/2, b.getHeight()/2, false));
         img.setMaxZoom(10f);
-        img.setRotation(270f);
         int h = img.viewHeight;
         int w = img.viewWidth;
         Log.i(TAG, "Height: " + h + " -- Width: " + w);

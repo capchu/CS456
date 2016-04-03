@@ -98,7 +98,8 @@ public class MainActivity extends Activity{
     }
 
     public void viewImage(Uri u, File f){
-        Intent intent = new Intent(this, PinchAndZoom.class);
+        //Intent intent = new Intent(this, PinchAndZoom.class);
+        Intent intent = new Intent(this, OLDImageViewActivity.class);
         intent.putExtra("Uri", u);
         intent.putExtra("File", f);
         startActivity(intent);
